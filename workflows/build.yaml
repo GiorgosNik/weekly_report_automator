@@ -1,0 +1,65 @@
+name: Build, Test, and Release
+
+on: [push, pull_request]
+
+jobs:
+  test_windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x' # Adjust according to your project
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
+
+    # - name: Run tests
+    #   run: dotnet test --configuration Release --no-build --logger trx --results-directory TestResults
+
+    # - name: Upload test results
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: test-results
+    #     path: TestResults
+
+  build_and_release_installer:
+    needs: test_windows # Run only after tests pass
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v') # Only run on version tags
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build executable
+      run: dotnet publish -c Release -r win-x64 --self-contained true -o dist
+
+    - name: Compile .ISS to .EXE Installer
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: utils/setup/setup.iss
+
+    - name: Upload Installer to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: installer/Weekly Report Automator.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

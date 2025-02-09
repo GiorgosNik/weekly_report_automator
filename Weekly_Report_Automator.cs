@@ -1,16 +1,16 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using System.Text;
 
-class Weekly_Report_Automator
+public class Weekly_Report_Automator
 {
     private const string GreekDays = "ΚΥΡ,ΔΕΥ,ΤΡΙ,ΤΕΤ,ΠΕΜ,ΠΑΡ,ΣΑΒ";
     private static readonly string[] GreekDayArray = GreekDays.Split(',');
 
-    static DateTime GetFirstSaturday() => DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1);
-    static DateTime GetLastFriday() => GetFirstSaturday().AddDays(13);
-    static DateTime GetFirstWeek() => GetFirstSaturday().AddDays(-21);
+    public static DateTime GetFirstSaturday() => DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1);
+    public static DateTime GetLastFriday() => GetFirstSaturday().AddDays(13);
+    public static DateTime GetFirstWeek() => GetFirstSaturday().AddDays(-21);
 
-    static Dictionary<string, string> GenerateDayPlaceholders()
+    public static Dictionary<string, string> GenerateDayPlaceholders()
     {
         var placeholderDates = new Dictionary<string, string>();
         var firstSaturday = GetFirstSaturday();
@@ -24,7 +24,7 @@ class Weekly_Report_Automator
         return placeholderDates;
     }
 
-    static Dictionary<string, string> GenerateWeekPlaceholders()
+    public static Dictionary<string, string> GenerateWeekPlaceholders()
     {
         var placeholdersWeek = new Dictionary<string, string>();
         var firstWeek = GetFirstWeek();
@@ -39,7 +39,7 @@ class Weekly_Report_Automator
         return placeholdersWeek;
     }
 
-    static Dictionary<string, string> GenerateFinalPlaceholders()
+    public static Dictionary<string, string> GenerateFinalPlaceholders()
     {
         var placeholdersFinal = new Dictionary<string, string>();
         var firstSaturday = GetFirstSaturday();
@@ -51,7 +51,7 @@ class Weekly_Report_Automator
         return placeholdersFinal;
     }
 
-    static void ReplacePlaceholderInTextElement(DocumentFormat.OpenXml.Drawing.Text textElement, Dictionary<string, string> placeholders)
+    public static void ReplacePlaceholderInTextElement(DocumentFormat.OpenXml.Drawing.Text textElement, Dictionary<string, string> placeholders)
     {
         foreach (string placeholder in placeholders.Keys)
         {
@@ -67,7 +67,7 @@ class Weekly_Report_Automator
         }
     }
 
-    static void ReplacePlaceholdersInPresentation(string presentationFilePath, Dictionary<string, string> placeholders)
+    public static void ReplacePlaceholdersInPresentation(string presentationFilePath, Dictionary<string, string> placeholders)
     {
         try
         {
@@ -94,7 +94,7 @@ class Weekly_Report_Automator
         }
     }
 
-    static void ProcessFile(string fileSource, string fileDestination, List<Dictionary<string, string>> placeholdersList)
+    public static void ProcessFile(string fileSource, string fileDestination, List<Dictionary<string, string>> placeholdersList)
     {
         try
         {
@@ -112,7 +112,7 @@ class Weekly_Report_Automator
         }
     }
 
-    static void CopyOtherBureauPresentation(string otherBureausPresentationDestination)
+    public static void CopyOtherBureauPresentation(string otherBureausPresentationDestination)
     {
         try
         {
@@ -126,7 +126,7 @@ class Weekly_Report_Automator
         }
     }
 
-    static void Main()
+    public static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
 
