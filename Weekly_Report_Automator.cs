@@ -3,63 +3,54 @@ using System.Text;
 
 class Weekly_Report_Automator
 {
-    static DateTime GetFirstSaturday()
-    {
-        return DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1);
-    }
+    private const string GreekDays = "ΚΥΡ,ΔΕΥ,ΤΡΙ,ΤΕΤ,ΠΕΜ,ΠΑΡ,ΣΑΒ";
+    private static readonly string[] GreekDayArray = GreekDays.Split(',');
 
-    static DateTime GetLastFriday()
-    {
-        return GetFirstSaturday().AddDays(13);
-    }
-
-    static DateTime GetFirstWeek()
-    {
-        return GetFirstSaturday().AddDays(-21);
-    }
+    static DateTime GetFirstSaturday() => DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1);
+    static DateTime GetLastFriday() => GetFirstSaturday().AddDays(13);
+    static DateTime GetFirstWeek() => GetFirstSaturday().AddDays(-21);
 
     static Dictionary<string, string> GenerateDayPlaceholders()
     {
-        // Define Greek Day format
-        string[] greekDays = { "ΚΥΡ", "ΔΕΥ", "ΤΡΙ", "ΤΕΤ", "ΠΕΜ", "ΠΑΡ", "ΣΑΒ" };
-
-        Dictionary<string, string> placeholderDates = new Dictionary<string, string>();
-
+        var placeholderDates = new Dictionary<string, string>();
         var firstSaturday = GetFirstSaturday();
+
         for (int i = 0; i < 14; i++)
         {
-            DateTime dayOfWeek = firstSaturday.AddDays(i);
-            placeholderDates[$"$D{i}"] = $"{greekDays[(int)dayOfWeek.DayOfWeek]}\n{dayOfWeek:dd MMM yyyy}".ToUpper();
+            var dayOfWeek = firstSaturday.AddDays(i);
+            placeholderDates[$"$D{i}"] = $"{GreekDayArray[(int)dayOfWeek.DayOfWeek]}\n{dayOfWeek:dd MMM yyyy}".ToUpper();
         }
+
         return placeholderDates;
     }
 
     static Dictionary<string, string> GenerateWeekPlaceholders()
     {
-        Dictionary<string, string> placeholdersWeek = new Dictionary<string, string>();
-
+        var placeholdersWeek = new Dictionary<string, string>();
         var firstWeek = GetFirstWeek();
+
         for (int i = 0; i < 6; i++)
         {
-            DateTime firstDayOfWeek = firstWeek.AddDays(i * 7);
-            DateTime lastDayOfWeek = firstDayOfWeek.AddDays(6);
+            var firstDayOfWeek = firstWeek.AddDays(i * 7);
+            var lastDayOfWeek = firstDayOfWeek.AddDays(6);
             placeholdersWeek[$"$W{i}"] = $"{firstDayOfWeek:dd/MM} - {lastDayOfWeek:dd/MM}";
         }
+
         return placeholdersWeek;
     }
 
     static Dictionary<string, string> GenerateFinalPlaceholders()
     {
-        string[] greekDays = { "ΚΥΡ", "ΔΕΥ", "ΤΡΙ", "ΤΕΤ", "ΠΕΜ", "ΠΑΡ", "ΣΑΒ" };
-        Dictionary<string, string> placeholdersFinal = new Dictionary<string, string>();
-
+        var placeholdersFinal = new Dictionary<string, string>();
         var firstSaturday = GetFirstSaturday();
         var lastFriday = GetLastFriday();
 
-        placeholdersFinal["$F0"] = $"{greekDays[(int)firstSaturday.DayOfWeek]} {firstSaturday:dd MMM yyyy}".ToUpper();
-        placeholdersFinal["$F1"] = $"{greekDays[(int)lastFriday.DayOfWeek]} {lastFriday:dd MMM yyyy}".ToUpper();
+        placeholdersFinal["$F0"] = $"{GreekDayArray[(int)firstSaturday.DayOfWeek]} {firstSaturday:dd MMM yyyy}".ToUpper();
+        placeholdersFinal["$F1"] = $"{GreekDayArray[(int)lastFriday.DayOfWeek]} {lastFriday:dd MMM yyyy}".ToUpper();
+
         return placeholdersFinal;
     }
+
     static void ReplacePlaceholderInTextElement(DocumentFormat.OpenXml.Drawing.Text textElement, Dictionary<string, string> placeholders)
     {
         foreach (string placeholder in placeholders.Keys)
@@ -78,16 +69,18 @@ class Weekly_Report_Automator
 
     static void ReplacePlaceholdersInPresentation(string presentationFilePath, Dictionary<string, string> placeholders)
     {
-        using (PresentationDocument presentation = PresentationDocument.Open(presentationFilePath, true))
+        try
         {
-            if (presentation.PresentationPart != null)
+            using (var presentation = PresentationDocument.Open(presentationFilePath, true))
             {
-                var slideParts = presentation.PresentationPart.SlideParts;
-
-                foreach (var slidePart in slideParts)
+                if (presentation.PresentationPart == null)
+                {
+                    Console.WriteLine($"Error processing presentation: {presentationFilePath} does not contain a presentation part.");
+                    return;
+                }
+                foreach (var slidePart in presentation.PresentationPart.SlideParts)
                 {
                     var textElements = slidePart.Slide.Descendants<DocumentFormat.OpenXml.Drawing.Text>();
-
                     foreach (var textElement in textElements)
                     {
                         ReplacePlaceholderInTextElement(textElement, placeholders);
@@ -95,52 +88,67 @@ class Weekly_Report_Automator
                 }
             }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing presentation: {ex.Message}");
+        }
     }
 
-    static void ProcessFile(string fileSource,string fileDestination, List<Dictionary<string, string>> placeholdersList)
+    static void ProcessFile(string fileSource, string fileDestination, List<Dictionary<string, string>> placeholdersList)
     {
-        // Ensure the destination directory exists
-        Directory.CreateDirectory(Path.GetDirectoryName(fileDestination));
-
-        // Copy the source file to the destination file before modifying
-        File.Copy(fileSource, fileDestination, true);
-
-        foreach (var placeholders in placeholdersList)
+        try
         {
-            ReplacePlaceholdersInPresentation(fileDestination, placeholders);
+            Directory.CreateDirectory(Path.GetDirectoryName(fileDestination));
+            File.Copy(fileSource, fileDestination, true);
+
+            foreach (var placeholders in placeholdersList)
+            {
+                ReplacePlaceholdersInPresentation(fileDestination, placeholders);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing file: {ex.Message}");
         }
     }
 
     static void CopyOtherBureauPresentation(string otherBureausPresentationDestination)
     {
-        string rootDirectory = Path.GetDirectoryName(otherBureausPresentationDestination);
-        File.Copy(otherBureausPresentationDestination, rootDirectory+ "\\ΑΠΟΛΟΓΙΣΜΟΣ 3ο ΕΓ.pptx", true);
-        File.Copy(otherBureausPresentationDestination, rootDirectory + "\\ΑΠΟΛΟΓΙΣΜΟΣ 4ο ΕΓ.pptx", true);
-
+        try
+        {
+            var rootDirectory = Path.GetDirectoryName(otherBureausPresentationDestination);
+            File.Copy(otherBureausPresentationDestination, Path.Combine(rootDirectory, "ΑΠΟΛΟΓΙΣΜΟΣ 3ο ΕΓ.pptx"), true);
+            File.Copy(otherBureausPresentationDestination, Path.Combine(rootDirectory, "ΑΠΟΛΟΓΙΣΜΟΣ 4ο ΕΓ.pptx"), true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error copying bureau presentations: {ex.Message}");
+        }
     }
 
     static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
 
-        string firstBureauPresentationTemplate = Path.Combine(AppContext.BaseDirectory, "C:\\Users\\Giorgos\\source\\repos\\Weeekly_Report_Automator\\template\\firstBureauTemplate.pptx");
-        string otherBureausPresentationTemplate = Path.Combine(AppContext.BaseDirectory, "C:\\Users\\Giorgos\\source\\repos\\Weeekly_Report_Automator\\template\\otherBureausTemplate.pptx");
-        string finalPresentationTemplate = Path.Combine(AppContext.BaseDirectory, "C:\\Users\\Giorgos\\source\\repos\\Weeekly_Report_Automator\\template\\finalPresentationTemplate.pptx");
+        var baseDirectory = AppContext.BaseDirectory;
+        var templateDirectory = Path.Combine(baseDirectory, "template");
+        var outputDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WeeklyReports");
 
-        string firstBureauPresentationDestination = Path.Combine(AppContext.BaseDirectory, "C:\\Users\\Giorgos\\source\\repos\\Weeekly_Report_Automator\\output\\ΑΠΟΛΟΓΙΣΜΟΣ 1ο ΕΓ.pptx");
-        string otherBureausPresentationDestination = Path.Combine(AppContext.BaseDirectory, "C:\\Users\\Giorgos\\source\\repos\\Weeekly_Report_Automator\\output\\ΑΠΟΛΟΓΙΣΜΟΣ 2ο ΕΓ.pptx");
-        string finalPresentationDestination = Path.Combine(AppContext.BaseDirectory, "C:\\Users\\Giorgos\\source\\repos\\Weeekly_Report_Automator\\output\\ΑΠΟΛΟΓΙΣΜΟΣ ΤΕΛΙΚΟ.pptx");
+        var firstBureauPresentationTemplate = Path.Combine(templateDirectory, "firstBureauTemplate.pptx");
+        var otherBureausPresentationTemplate = Path.Combine(templateDirectory, "otherBureausTemplate.pptx");
+        var finalPresentationTemplate = Path.Combine(templateDirectory, "finalPresentationTemplate.pptx");
 
-        Dictionary<string, string> dayPlaceholders = GenerateDayPlaceholders();
-        Dictionary<string, string> weekPlaceholders = GenerateWeekPlaceholders();
-        Dictionary<string, string> finalPresentationPlaceholders = GenerateFinalPlaceholders();
+        var firstBureauPresentationDestination = Path.Combine(outputDirectory, "ΑΠΟΛΟΓΙΣΜΟΣ 1ο ΕΓ.pptx");
+        var otherBureausPresentationDestination = Path.Combine(outputDirectory, "ΑΠΟΛΟΓΙΣΜΟΣ 2ο ΕΓ.pptx");
+        var finalPresentationDestination = Path.Combine(outputDirectory, "ΑΠΟΛΟΓΙΣΜΟΣ ΤΕΛΙΚΟ.pptx");
 
+        var dayPlaceholders = GenerateDayPlaceholders();
+        var weekPlaceholders = GenerateWeekPlaceholders();
+        var finalPresentationPlaceholders = GenerateFinalPlaceholders();
 
-        ProcessFile(firstBureauPresentationTemplate, firstBureauPresentationDestination, new List<Dictionary<string,string>> {dayPlaceholders, weekPlaceholders });
-
+        ProcessFile(firstBureauPresentationTemplate, firstBureauPresentationDestination, new List<Dictionary<string, string>> { dayPlaceholders, weekPlaceholders });
         ProcessFile(otherBureausPresentationTemplate, otherBureausPresentationDestination, new List<Dictionary<string, string>> { dayPlaceholders, weekPlaceholders });
-
-        ProcessFile(finalPresentationTemplate, finalPresentationDestination, new List<Dictionary<string, string>>{finalPresentationPlaceholders});
+        ProcessFile(finalPresentationTemplate, finalPresentationDestination, new List<Dictionary<string, string>> { finalPresentationPlaceholders });
 
         CopyOtherBureauPresentation(otherBureausPresentationDestination);
     }
