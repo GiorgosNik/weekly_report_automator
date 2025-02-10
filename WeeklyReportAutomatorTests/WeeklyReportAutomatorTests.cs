@@ -1,4 +1,8 @@
-﻿public class WeeklyReportAutomatorTests: TestsBase
+﻿using Xunit;
+using System;
+using System.Collections.Generic;
+
+public class WeeklyReportAutomatorTests: TestsBase
 {
     [Fact]
     public void GetFirstSaturday_ReturnsCorrectDate()
