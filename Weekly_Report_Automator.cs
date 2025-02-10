@@ -1,10 +1,12 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using System.Globalization;
 using System.Text;
 
 public static class Weekly_Report_Automator
 {
     private const string GreekDays = "ΚΥΡ,ΔΕΥ,ΤΡΙ,ΤΕΤ,ΠΕΜ,ΠΑΡ,ΣΑΒ";
     private static readonly string[] GreekDayArray = GreekDays.Split(',');
+    private static CultureInfo GreekCulture = new("el-GR");
 
     public static DateTime GetFirstSaturday() => SystemTime.Today().AddDays(-(int)SystemTime.Today().DayOfWeek - 1);
     public static DateTime GetLastFriday() => GetFirstSaturday().AddDays(13);
@@ -18,7 +20,8 @@ public static class Weekly_Report_Automator
         for (int i = 0; i < 14; i++)
         {
             var dayOfWeek = firstSaturday.AddDays(i);
-            placeholderDates[$"$D{i}"] = $"{GreekDayArray[(int)dayOfWeek.DayOfWeek]}\n{dayOfWeek:dd MMM yyyy}".ToUpper();
+            var greekDayOfWeek = dayOfWeek.ToString("dd MMM yyyy", GreekCulture);
+            placeholderDates[$"$D{i}"] = $"{GreekDayArray[(int)dayOfWeek.DayOfWeek]}\n{greekDayOfWeek}".ToUpper();
         }
 
         return placeholderDates;
@@ -33,7 +36,11 @@ public static class Weekly_Report_Automator
         {
             var firstDayOfWeek = firstWeek.AddDays(i * 7);
             var lastDayOfWeek = firstDayOfWeek.AddDays(6);
-            placeholdersWeek[$"$W{i}"] = $"{firstDayOfWeek:dd/MM} - {lastDayOfWeek:dd/MM}";
+
+            var greekFirstDayOfWeek = firstDayOfWeek.ToString("dd/MM", GreekCulture);
+            var greekLastDayOfWeek = lastDayOfWeek.ToString("dd/MM", GreekCulture);
+
+            placeholdersWeek[$"$W{i}"] = $"{greekFirstDayOfWeek} - {greekLastDayOfWeek}";
         }
 
         return placeholdersWeek;

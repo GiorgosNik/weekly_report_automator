@@ -1,14 +1,9 @@
-﻿using Xunit;
-using System;
-using System.Collections.Generic;
-
-public class WeeklyReportAutomatorTests: TestsBase
+﻿public class WeeklyReportAutomatorTests: TestsBase
 {
     [Fact]
     public void GetFirstSaturday_ReturnsCorrectDate()
     {
         // Arrange
-        var today = new DateTime(2023, 10, 10); // Tuesday, October 10, 2023
         var expectedFirstSaturday = new DateTime(2023, 10, 7); // Saturday, October 7, 2023
 
         // Act
@@ -22,7 +17,6 @@ public class WeeklyReportAutomatorTests: TestsBase
     public void GetLastFriday_ReturnsCorrectDate()
     {
         // Arrange
-        var firstSaturday = new DateTime(2023, 10, 7); // Saturday, October 7, 2023
         var expectedLastFriday = new DateTime(2023, 10, 20); // Friday, October 20, 2023
 
         // Act
