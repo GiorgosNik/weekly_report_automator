@@ -53,8 +53,11 @@ public static class Weekly_Report_Automator
         var firstSaturday = GetFirstSaturday();
         var lastFriday = GetLastFriday();
 
-        placeholdersFinal["$F0"] = $"{GreekDayArray[(int)firstSaturday.DayOfWeek]} {firstSaturday:dd MMM yyyy}".ToUpper();
-        placeholdersFinal["$F1"] = $"{GreekDayArray[(int)lastFriday.DayOfWeek]} {lastFriday:dd MMM yyyy}".ToUpper();
+        var greekFirstSaturday = firstSaturday.ToString("dd MMM yyyy", GreekCulture);
+        var greekLastFriday = lastFriday.ToString("dd MMM yyyy", GreekCulture);
+
+        placeholdersFinal["$F0"] = $"{GreekDayArray[(int)firstSaturday.DayOfWeek]} {greekFirstSaturday}".ToUpper();
+        placeholdersFinal["$F1"] = $"{GreekDayArray[(int)lastFriday.DayOfWeek]} {greekLastFriday}".ToUpper();
 
         return placeholdersFinal;
     }
