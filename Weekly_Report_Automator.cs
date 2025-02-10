@@ -6,7 +6,7 @@ public class Weekly_Report_Automator
     private const string GreekDays = "ΚΥΡ,ΔΕΥ,ΤΡΙ,ΤΕΤ,ΠΕΜ,ΠΑΡ,ΣΑΒ";
     private static readonly string[] GreekDayArray = GreekDays.Split(',');
 
-    public static DateTime GetFirstSaturday() => DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1);
+    public static DateTime GetFirstSaturday() => SystemTime.Today().AddDays(-(int)SystemTime.Today().DayOfWeek - 1);
     public static DateTime GetLastFriday() => GetFirstSaturday().AddDays(13);
     public static DateTime GetFirstWeek() => GetFirstSaturday().AddDays(-21);
 

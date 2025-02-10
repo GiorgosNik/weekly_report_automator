@@ -21,14 +21,14 @@ jobs:
     - name: Build project
       run: dotnet build --configuration Release --no-restore
 
-    # - name: Run tests
-    #   run: dotnet test --configuration Release --no-build --logger trx --results-directory TestResults
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --logger trx --results-directory TestResults
 
-    # - name: Upload test results
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: test-results
-    #     path: TestResults
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: TestResults
 
   build_and_release_installer:
     needs: test_windows # Run only after tests pass

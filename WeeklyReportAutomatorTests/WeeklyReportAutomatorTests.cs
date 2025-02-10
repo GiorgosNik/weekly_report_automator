@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-public class WeeklyReportAutomatorTests
+public class WeeklyReportAutomatorTests: TestsBase
 {
     [Fact]
     public void GetFirstSaturday_ReturnsCorrectDate()
@@ -38,20 +38,20 @@ public class WeeklyReportAutomatorTests
         // Arrange
         var expectedPlaceholders = new Dictionary<string, string>
         {
-            { "$D0", "ΣΑΒ\n07 OCT 2023" },
-            { "$D1", "ΚΥΡ\n08 OCT 2023" },
-            { "$D2", "ΔΕΥ\n09 OCT 2023" },
-            { "$D3", "ΤΡΙ\n10 OCT 2023" },
-            { "$D4", "ΤΕΤ\n11 OCT 2023" },
-            { "$D5", "ΠΕΜ\n12 OCT 2023" },
-            { "$D6", "ΠΑΡ\n13 OCT 2023" },
-            { "$D7", "ΣΑΒ\n14 OCT 2023" },
-            { "$D8", "ΚΥΡ\n15 OCT 2023" },
-            { "$D9", "ΔΕΥ\n16 OCT 2023" },
-            { "$D10", "ΤΡΙ\n17 OCT 2023" },
-            { "$D11", "ΤΕΤ\n18 OCT 2023" },
-            { "$D12", "ΠΕΜ\n19 OCT 2023" },
-            { "$D13", "ΠΑΡ\n20 OCT 2023" }
+            { "$D0", "ΣΑΒ\n07 ΟΚΤ 2023" },
+            { "$D1", "ΚΥΡ\n08 ΟΚΤ 2023" },
+            { "$D2", "ΔΕΥ\n09 ΟΚΤ 2023" },
+            { "$D3", "ΤΡΙ\n10 ΟΚΤ 2023" },
+            { "$D4", "ΤΕΤ\n11 ΟΚΤ 2023" },
+            { "$D5", "ΠΕΜ\n12 ΟΚΤ 2023" },
+            { "$D6", "ΠΑΡ\n13 ΟΚΤ 2023" },
+            { "$D7", "ΣΑΒ\n14 ΟΚΤ 2023" },
+            { "$D8", "ΚΥΡ\n15 ΟΚΤ 2023" },
+            { "$D9", "ΔΕΥ\n16 ΟΚΤ 2023" },
+            { "$D10", "ΤΡΙ\n17 ΟΚΤ 2023" },
+            { "$D11", "ΤΕΤ\n18 ΟΚΤ 2023" },
+            { "$D12", "ΠΕΜ\n19 ΟΚΤ 2023" },
+            { "$D13", "ΠΑΡ\n20 ΟΚΤ 2023" }
         };
 
         // Act
@@ -88,8 +88,8 @@ public class WeeklyReportAutomatorTests
         // Arrange
         var expectedPlaceholders = new Dictionary<string, string>
         {
-            { "$F0", "ΣΑΒ 07 OCT 2023" },
-            { "$F1", "ΠΑΡ 20 OCT 2023" }
+            { "$F0", "ΣΑΒ 07 ΟΚΤ 2023" },
+            { "$F1", "ΠΑΡ 20 ΟΚΤ 2023" }
         };
 
         // Act
