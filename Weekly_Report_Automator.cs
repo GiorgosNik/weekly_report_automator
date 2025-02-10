@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using System.Text;
 
-public class Weekly_Report_Automator
+public static class Weekly_Report_Automator
 {
     private const string GreekDays = "ΚΥΡ,ΔΕΥ,ΤΡΙ,ΤΕΤ,ΠΕΜ,ΠΑΡ,ΣΑΒ";
     private static readonly string[] GreekDayArray = GreekDays.Split(',');
