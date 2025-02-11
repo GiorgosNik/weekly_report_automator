@@ -4,10 +4,11 @@ A Windows desktop application that automates the creation of weekly report prese
 
 ## Related army projects
 This repository is part of a series of automation apps that I created during my service in the Information and Research Bureau in the Greek Army.
-Other such projects.
-- [weekly_report_automator](https://github.com/GiorgosNik/weekly_report_automator)
-- [Repo 2](https://github.com/thematic-projects/repo2)
-- [Repo 3](https://github.com/thematic-projects/repo3)
+### Similar projects.
+- [powerpoint_automator](https://github.com/GiorgosNik/powerpoint_automator):
+Python automation tool for generating weather forecast videos.
+- [media_compressor](https://github.com/GiorgosNik/media_compressor):
+Python desktop app for batch compression of videos and images.
 
 ## Features
 
